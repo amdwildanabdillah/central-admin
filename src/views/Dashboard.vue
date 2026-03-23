@@ -1,15 +1,6 @@
 <template>
   <div class="h-screen bg-[#09090b] text-white font-sans flex flex-col md:flex-row overflow-hidden text-sm">
     
-    <Transition name="toast">
-      <div v-if="toast.show" 
-           :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl border shadow-2xl flex items-center gap-3 min-w-[300px] backdrop-blur-xl', 
-                    toast.type === 'success' ? 'bg-cyan-400/10 border-cyan-400/20 text-cyan-400' : 'bg-red-400/10 border-red-400/20 text-red-400']">
-        <i :class="toast.type === 'success' ? 'ph-fill ph-check-circle text-xl' : 'ph-fill ph-warning-circle text-xl'"></i>
-        <span class="font-bold tracking-tight">{{ toast.message }}</span>
-      </div>
-    </Transition>
-
     <aside class="hidden md:flex w-64 border-r border-white/10 p-6 flex-col bg-[#111113] z-20">
       <div class="mb-10 text-left">
         <h1 class="text-2xl font-extrabold tracking-tight italic">Central <span class="text-cyan-400">Admin.</span></h1>
@@ -85,7 +76,6 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="projects.length === 0"><td colspan="5" class="p-20 text-center text-gray-500 font-medium tracking-tight">Belum ada data di Supabase.</td></tr>
             </tbody>
           </table>
         </div>
@@ -155,11 +145,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Title</label>
-                            <input v-model="form.title" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none focus:border-white transition shadow-inner" placeholder="Project Name">
+                            <input v-model="form.title" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none focus:border-white transition shadow-inner">
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Category</label>
-                            <input v-model="form.category" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none focus:border-white transition" placeholder="e.g. Web Dev">
+                            <input v-model="form.category" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none focus:border-white transition">
                         </div>
                     </div>
 
@@ -171,11 +161,9 @@
                         <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Short Desc</label><textarea v-model="form.descShort" rows="2" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></textarea></div>
                         <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Long Desc</label><textarea v-model="form.descLong" rows="4" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></textarea></div>
                         
-                        <div class="bg-[#09090b] border border-dashed border-white/20 p-8 rounded-2xl text-center group hover:border-white/40 transition">
-                            <i class="ph ph-cloud-arrow-up text-3xl text-gray-600 mb-2 block group-hover:text-white transition"></i>
-                            <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] cursor-pointer block mb-4">Click to Upload Images</label>
-                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-xs text-gray-500 file:hidden cursor-pointer mx-auto">
-                            <div v-if="selectedFiles.length > 0" class="mt-4 flex gap-2 flex-wrap justify-center"><span v-for="file in selectedFiles" :key="file.name" class="text-[9px] bg-white/10 text-white px-3 py-1 rounded-full">{{ file.name }}</span></div>
+                        <div class="bg-[#09090b] border border-dashed border-white/20 p-8 rounded-2xl text-center">
+                            <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] block mb-4">Click to Upload Images</label>
+                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-xs text-gray-500">
                         </div>
 
                         <div class="space-y-3">
@@ -190,17 +178,16 @@
                     </template>
 
                     <template v-if="form.project_type === 'photo'">
-                        <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Aesthetic Quote</label><input v-model="form.descShort" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none" placeholder="..."></div>
+                        <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Aesthetic Quote</label><input v-model="form.descShort" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></div>
                         <div class="bg-[#09090b] border border-dashed border-white/20 p-10 rounded-2xl text-center">
-                            <i class="ph ph-images text-3xl text-gray-600 mb-3 block"></i>
-                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-xs text-gray-500 file:bg-white/5 file:border-0 file:text-white file:px-4 file:py-2 file:rounded-full cursor-pointer">
+                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-xs text-gray-500">
                         </div>
                     </template>
 
                     <template v-if="form.project_type === 'cinema'">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Platform</label><select v-model="form.media_type" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none text-white"><option value="youtube">YouTube</option><option value="drive">Google Drive</option><option value="link">Behance</option></select></div>
-                            <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Video ID</label><input v-model="form.link" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none" placeholder="Ex: gDOdVnRsZ0E"></div>
+                            <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Video ID</label><input v-model="form.link" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></div>
                         </div>
                     </template>
                 </form>
@@ -208,8 +195,7 @@
 
             <div class="p-8 border-t border-white/5 bg-[#18181b]/50 rounded-b-[2rem] flex justify-end gap-4">
                 <button type="button" @click="closeModal" class="px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-gray-500 hover:text-white transition">Cancel</button>
-                <button @click="saveProject" :disabled="isSaving" :class="['px-10 py-3 rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50 flex items-center gap-2 shadow-xl', activeMenu === 'vixel' ? 'bg-cyan-400 text-black shadow-cyan-400/20' : 'bg-purple-400 text-black shadow-purple-400/20']">
-                    <i v-if="isSaving" class="ph ph-spinner-gap animate-spin"></i>
+                <button @click="saveProject" :disabled="isSaving" :class="['px-10 py-3 rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center gap-2', activeMenu === 'vixel' ? 'bg-cyan-400 text-black shadow-cyan-400/20' : 'bg-purple-400 text-black shadow-purple-400/20']">
                     {{ isSaving ? 'Sending...' : 'Save Data' }}
                 </button>
             </div>
@@ -222,6 +208,7 @@
 import { ref, onMounted, computed, watch } from 'vue';
 import { supabase } from '../supabase';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2'; // <-- IMPORT SWEETALERT
 
 const router = useRouter();
 const activeMenu = ref('vixel'); 
@@ -234,11 +221,17 @@ const isEditing = ref(false);
 const editId = ref(null);
 const selectedFiles = ref([]);
 
-// TOAST STATE
-const toast = ref({ show: false, message: '', type: 'success' });
-const showToast = (msg, type = 'success') => {
-  toast.value = { show: true, message: msg, type };
-  setTimeout(() => { toast.value.show = false; }, 3000);
+// --- STYLE CONFIG UNTUK SWEETALERT ---
+const swalConfig = {
+  background: '#111113',
+  color: '#fff',
+  confirmButtonColor: '#22d3ee', // Cyan-400
+  borderRadius: '24px',
+  customClass: {
+    popup: 'border border-white/10 shadow-2xl',
+    confirmButton: 'rounded-xl px-8 py-3 font-bold uppercase tracking-widest text-xs',
+    cancelButton: 'rounded-xl px-8 py-3 font-bold uppercase tracking-widest text-xs'
+  }
 };
 
 const availableStacks = ['React', 'Vue.js', 'Tailwind CSS', 'Vite', 'Flutter', 'Dart', 'AppSheet', 'Supabase', 'Firebase', 'Google Maps', 'Netlify', 'Vercel', 'Node.js', 'HTML5 Semantic', 'CSS3 Modern', 'Vanilla JS'];
@@ -254,14 +247,26 @@ const fetchProjects = async () => {
     const { data, error } = await supabase.from(activeTable.value).select('*').order('created_at', { ascending: false });
     if (error) throw error;
     projects.value = data;
-  } catch (e) { showToast("Gagal ambil data", "error"); } 
-  finally { isLoading.value = false; }
+  } catch (e) { 
+    Swal.fire({ ...swalConfig, icon: 'error', title: 'Oops!', text: 'Gagal ambil data.' });
+  } finally { isLoading.value = false; }
 };
 
 onMounted(() => { fetchProjects(); });
 
 const seedData = async () => {
-  if(!confirm(`Import data asli ke ${activeTable.value}?`)) return;
+  const result = await Swal.fire({
+    ...swalConfig,
+    title: 'Seed Database?',
+    text: `Mau isi data lama ke ${activeTable.value}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Seed it!',
+    cancelButtonColor: '#333'
+  });
+
+  if(!result.isConfirmed) return;
+
   isLoading.value = true;
   let dataToSeed = [];
   
@@ -282,15 +287,16 @@ const seedData = async () => {
         { project_type: 'cinema', title: 'Profile Video', category: 'Profil Desa Wisata Ngabab', media_type: 'youtube', link: 'pBeJKxubs6M', isPinned: true },
         { project_type: 'cinema', title: 'After Movie', category: 'KKN UINSA 72 2025', media_type: 'link', link: 'wbE4NyEjDTc', isPinned: true },
         { project_type: 'dev', title: 'Storydesto', category: 'Marketplace Platform', client: 'Internal Startup', descShort: 'A digital marketplace connecting photography vendors with clients.', descLong: 'Features include a Smart Booking System, integrated multi-payment Gateway (Midtrans), and a robust Admin Dashboard.', stack: ['HTML5 Semantic', 'CSS3 Modern', 'Vanilla JS', 'Netlify'], images: ['/coverdesto.png'], isPinned: true },
-        { project_type: 'dev', title: "Puskewan Mobile", category: "Android App", client: 'Puskeswan Trenggalek', descShort: "Mobile application for veterinary services management.", descLong: "Features appointment scheduling, medical record tracking for livestock, and real-time reporting.", stack: ['Flutter', 'Dart', 'Supabase', 'PostgreSQL'], images: ['/puskeswan/1.png'], isPinned: true },
-        { project_type: 'photo', title: 'Behind the Scene', category: 'PROFILE', descShort: 'Fragments of moments behind the camera.', images: ['/me7.jpg', '/me6.jpg', '/me5.jpg'], isPinned: true },
-        { project_type: 'photo', title: 'Wedding Stories', category: 'WEDDING', descShort: 'Two souls, one promise. Capturing the sacred vows of eternal love.', images: ['/wed-cov.jpg', '/wed1.jpg', '/wed2.jpg'], isPinned: true },
-        { project_type: 'photo', title: 'Life Lately', category: 'JOURNAL', descShort: 'Fragments of time, gasoline, caffeine, and stories in between.', images: ['/livin1.jpg', '/livin3.jpg', '/livin10.jpg'], isPinned: true }
+        { project_type: 'photo', title: 'Wedding Stories', category: 'WEDDING', descShort: 'Two souls, one promise. Capturing the sacred vows of eternal love.', images: ['/wed-cov.jpg'], isPinned: true },
+        { project_type: 'photo', title: 'Life Lately', category: 'JOURNAL', descShort: 'Fragments of moments.', images: ['/livin1.jpg'], isPinned: true }
     ];
   }
 
   const { error } = await supabase.from(activeTable.value).insert(dataToSeed);
-  if(!error) { fetchProjects(); showToast("Database seeded successfully!"); }
+  if(!error) { 
+    fetchProjects(); 
+    Swal.fire({ ...swalConfig, icon: 'success', title: 'Imported!', text: 'Database seeded successfully.' });
+  }
   isLoading.value = false;
 };
 
@@ -316,15 +322,28 @@ const saveProject = async () => {
         if (isEditing.value) await supabase.from(activeTable.value).update(payload).eq('id', editId.value);
         else await supabase.from(activeTable.value).insert([payload]);
         closeModal(); fetchProjects();
-        showToast("Project saved successfully!");
-    } catch (e) { showToast("Gagal menyimpan!", "error"); } finally { isSaving.value = false; }
+        Swal.fire({ ...swalConfig, icon: 'success', title: 'Saved!', timer: 1500, showConfirmButton: false });
+    } catch (e) { 
+        Swal.fire({ ...swalConfig, icon: 'error', title: 'Gagal!', text: 'Periksa koneksi atau file.' });
+    } finally { isSaving.value = false; }
 };
 
 const deleteProject = async (id) => { 
-  if(confirm("Hapus project ini secara permanen?")) { 
+  const result = await Swal.fire({
+    ...swalConfig,
+    title: 'Hapus Project?',
+    text: "Data bakal ilang selamanya!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Hapus Aja!',
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#333'
+  });
+
+  if(result.isConfirmed) { 
     await supabase.from(activeTable.value).delete().eq('id', id); 
     fetchProjects(); 
-    showToast("Project deleted.");
+    Swal.fire({ ...swalConfig, icon: 'success', title: 'Deleted.', timer: 1000, showConfirmButton: false });
   } 
 };
 
@@ -332,12 +351,8 @@ const handleLogout = async () => { await supabase.auth.signOut(); router.push('/
 </script>
 
 <style scoped>
-.toast-enter-active, .toast-leave-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -20px); }
-
-/* Hide scrollbar but keep functionality */
+/* Swalert Dark Tweaks */
+.swal2-popup { border: 1px solid rgba(255,255,255,0.1) !important; }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 </style>
