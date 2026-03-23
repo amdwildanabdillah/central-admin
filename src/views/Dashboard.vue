@@ -1,9 +1,18 @@
 <template>
-  <div class="h-screen bg-[#09090b] text-white font-sans flex flex-col md:flex-row overflow-hidden">
+  <div class="h-screen bg-[#09090b] text-white font-sans flex flex-col md:flex-row overflow-hidden text-sm">
     
+    <Transition name="toast">
+      <div v-if="toast.show" 
+           :class="['fixed top-6 left-1/2 -translate-x-1/2 z-[200] px-6 py-3 rounded-2xl border shadow-2xl flex items-center gap-3 min-w-[300px] backdrop-blur-xl', 
+                    toast.type === 'success' ? 'bg-cyan-400/10 border-cyan-400/20 text-cyan-400' : 'bg-red-400/10 border-red-400/20 text-red-400']">
+        <i :class="toast.type === 'success' ? 'ph-fill ph-check-circle text-xl' : 'ph-fill ph-warning-circle text-xl'"></i>
+        <span class="font-bold tracking-tight">{{ toast.message }}</span>
+      </div>
+    </Transition>
+
     <aside class="hidden md:flex w-64 border-r border-white/10 p-6 flex-col bg-[#111113] z-20">
-      <div class="mb-10">
-        <h1 class="text-2xl font-extrabold tracking-tight">Central <span class="text-cyan-400">Admin.</span></h1>
+      <div class="mb-10 text-left">
+        <h1 class="text-2xl font-extrabold tracking-tight italic">Central <span class="text-cyan-400">Admin.</span></h1>
         <p class="text-[10px] uppercase tracking-widest text-gray-500 mt-1">Super Dashboard</p>
       </div>
       
@@ -22,14 +31,13 @@
     </aside>
 
     <header class="md:hidden flex justify-between items-center p-6 border-b border-white/10 bg-[#111113] z-30">
-        <h1 class="text-xl font-extrabold">Central <span class="text-cyan-400">Admin.</span></h1>
+        <h1 class="text-xl font-extrabold italic">Central <span class="text-cyan-400">Admin.</span></h1>
         <button @click="handleLogout" class="text-gray-500 hover:text-red-400"><i class="ph ph-sign-out text-2xl"></i></button>
     </header>
 
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-      
-      <div class="p-6 md:p-10 pb-4 bg-[#09090b] z-10">
-          <h2 class="text-2xl md:text-4xl font-bold">
+      <div class="p-6 md:p-10 pb-4 bg-[#09090b] z-10 text-left">
+          <h2 class="text-2xl md:text-4xl font-bold tracking-tighter">
             Manage <span :class="activeMenu === 'vixel' ? 'text-cyan-400' : 'text-purple-400'">{{ activeMenu === 'vixel' ? 'Vixel Projects' : 'Personal Porto' }}</span>
           </h2>
           <p class="text-gray-400 text-[10px] uppercase tracking-widest mt-1 opacity-50">Database: {{ activeTable }}</p>
@@ -40,144 +48,169 @@
             <i :class="['ph ph-spinner-gap text-4xl animate-spin mb-4', activeMenu === 'vixel' ? 'text-cyan-400' : 'text-purple-400']"></i>
         </div>
 
-        <div v-else class="bg-[#111113] border border-white/10 rounded-xl overflow-x-auto">
+        <div v-else class="bg-[#111113] border border-white/10 rounded-2xl overflow-x-auto shadow-2xl">
           <table class="w-full text-left border-collapse min-w-[800px]">
             <thead class="sticky top-0 bg-[#111113] z-10">
               <tr class="border-b border-white/10 text-gray-400 text-[10px] uppercase tracking-widest bg-white/5">
-                <th class="p-4 pl-6 font-bold w-12">Pin</th>
-                <th class="p-4 font-bold">Title & Client</th>
-                <th class="p-4 font-bold">Category</th>
-                <th class="p-4 font-bold" v-if="activeMenu === 'personal'">Type</th>
-                <th class="p-4 pr-6 font-bold text-right">Actions</th>
+                <th class="p-5 pl-8 font-bold w-12 text-center">Pin</th>
+                <th class="p-5 font-bold">Title & Client</th>
+                <th class="p-5 font-bold text-center">Category</th>
+                <th class="p-5 font-bold text-center" v-if="activeMenu === 'personal'">Type</th>
+                <th class="p-5 pr-8 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody class="text-sm">
-              <tr v-for="project in projects" :key="project.id" class="border-b border-white/5 hover:bg-white/5 transition">
-                <td class="p-4 pl-6 text-center">
-                  <i v-if="project.isPinned" :class="['ph-fill ph-push-pin text-lg', activeMenu === 'vixel' ? 'text-cyan-400' : 'text-purple-400']"></i>
-                  <i v-else class="ph ph-push-pin text-gray-600 text-lg"></i>
+              <tr v-for="project in projects" :key="project.id" class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                <td class="p-5 pl-8 text-center">
+                  <i v-if="project.isPinned" :class="['ph-fill ph-push-pin text-xl', activeMenu === 'vixel' ? 'text-cyan-400' : 'text-purple-400']"></i>
+                  <i v-else class="ph ph-push-pin text-gray-700 text-xl"></i>
                 </td>
-                <td class="p-4">
-                  <div class="font-bold text-white text-base">{{ project.title }}</div>
-                  <div class="text-xs text-gray-500 mt-1" v-if="project.project_type !== 'cinema'">{{ project.client || 'No Client' }}</div>
+                <td class="p-5">
+                  <div class="font-bold text-white text-base tracking-tight">{{ project.title }}</div>
+                  <div class="text-xs text-gray-500 mt-0.5" v-if="project.project_type !== 'cinema'">{{ project.client || 'No Client' }}</div>
                 </td>
-                <td class="p-4">
-                  <span class="bg-white/10 px-2 py-1 rounded text-[10px] font-bold uppercase border border-white/10 text-gray-300">{{ project.category }}</span>
+                <td class="p-5 text-center">
+                  <span class="bg-white/5 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-white/10 text-gray-400">{{ project.category }}</span>
                 </td>
-                <td class="p-4" v-if="activeMenu === 'personal'">
-                  <span class="px-2 py-1 rounded text-[10px] font-bold uppercase" 
-                        :class="project.project_type === 'dev' ? 'bg-blue-500/20 text-blue-400' : project.project_type === 'photo' ? 'bg-orange-500/20 text-orange-400' : 'bg-red-500/20 text-red-400'">
+                <td class="p-5 text-center" v-if="activeMenu === 'personal'">
+                  <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter" 
+                        :class="project.project_type === 'dev' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : project.project_type === 'photo' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'">
                     {{ project.project_type }}
                   </span>
                 </td>
-                <td class="p-4 pr-6 text-right">
+                <td class="p-5 pr-8 text-right">
                   <div class="flex justify-end gap-2">
-                    <button @click="openEditModal(project)" class="p-2 rounded bg-white/5 hover:bg-white hover:text-black transition border border-white/10"><i class="ph ph-pencil-simple"></i></button>
-                    <button @click="deleteProject(project.id)" class="p-2 rounded bg-white/5 hover:bg-red-500 hover:text-white transition border border-white/10"><i class="ph ph-trash"></i></button>
+                    <button @click="openEditModal(project)" class="p-2.5 rounded-xl bg-white/5 hover:bg-white hover:text-black transition border border-white/10"><i class="ph ph-pencil-simple text-lg"></i></button>
+                    <button @click="deleteProject(project.id)" class="p-2.5 rounded-xl bg-white/5 hover:bg-red-500 hover:text-white transition border border-white/10"><i class="ph ph-trash text-lg"></i></button>
                   </div>
                 </td>
               </tr>
+              <tr v-if="projects.length === 0"><td colspan="5" class="p-20 text-center text-gray-500 font-medium tracking-tight">Belum ada data di Supabase.</td></tr>
             </tbody>
           </table>
         </div>
       </main>
 
       <button @click="openAddModal" 
-              :class="['fixed bottom-28 right-6 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center z-50 transition-transform active:scale-90', 
-                       activeMenu === 'vixel' ? 'bg-cyan-400 text-black' : 'bg-purple-400 text-black']">
-          <i class="ph-fill ph-plus text-2xl"></i>
+              :class="['fixed bottom-28 right-6 w-16 h-16 rounded-2xl shadow-2xl flex items-center justify-center z-50 transition-all active:scale-95 active:rotate-12', 
+                       activeMenu === 'vixel' ? 'bg-cyan-400 text-black shadow-cyan-400/40' : 'bg-purple-400 text-black shadow-purple-400/40']">
+          <i class="ph-fill ph-plus text-3xl"></i>
       </button>
 
-      <div class="md:hidden fixed bottom-[72px] left-0 w-full px-6 py-3 flex gap-3 z-40 bg-gradient-to-t from-[#09090b] to-transparent">
+      <div class="md:hidden fixed bottom-[88px] left-0 w-full px-6 py-3 flex gap-3 z-40">
           <a :href="activeMenu === 'vixel' ? 'https://vixelcreative.my.id' : 'https://portfoliowildan.my.id'" 
              target="_blank"
-             class="flex-1 flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest active:bg-white/20 transition">
-             <i class="ph ph-arrow-square-out text-lg"></i> View Site
+             class="flex-1 flex items-center justify-center gap-2 bg-[#111113]/80 backdrop-blur-xl border border-white/10 text-white py-4 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] active:bg-white/10 transition shadow-xl">
+             View Site
           </a>
           <button @click="seedData" 
-             class="flex-1 flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/10 text-gray-400 py-3 rounded-xl font-bold text-xs uppercase tracking-widest active:bg-white/20 transition">
-             <i class="ph ph-database text-lg"></i> Seed Data
+             class="flex-1 flex items-center justify-center gap-2 bg-[#111113]/80 backdrop-blur-xl border border-white/10 text-gray-500 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-[0.2em] active:bg-white/10 transition shadow-xl">
+             Seed
           </button>
       </div>
 
-      <nav class="md:hidden fixed bottom-0 w-full bg-[#111113]/95 backdrop-blur-xl border-t border-white/10 flex justify-around p-3 pb-6 z-50">
-          <button @click="switchMenu('vixel')" :class="['flex flex-col items-center gap-1 transition', activeMenu === 'vixel' ? 'text-cyan-400' : 'text-gray-500']"><i :class="activeMenu === 'vixel' ? 'ph-fill ph-squares-four text-2xl' : 'ph ph-squares-four text-2xl'"></i><span class="text-[8px] font-bold uppercase">Vixel</span></button>
-          <button @click="switchMenu('personal')" :class="['flex flex-col items-center gap-1 transition', activeMenu === 'personal' ? 'text-purple-400' : 'text-gray-500']"><i :class="activeMenu === 'personal' ? 'ph-fill ph-user-circle text-2xl' : 'ph ph-user-circle text-2xl'"></i><span class="text-[8px] font-bold uppercase">Personal</span></button>
+      <nav class="md:hidden fixed bottom-0 w-full bg-[#09090b]/90 backdrop-blur-2xl border-t border-white/10 flex justify-around p-4 pb-8 z-50">
+          <button @click="switchMenu('vixel')" :class="['flex flex-col items-center gap-1 transition', activeMenu === 'vixel' ? 'text-cyan-400' : 'text-gray-600']"><i :class="activeMenu === 'vixel' ? 'ph-fill ph-squares-four text-3xl' : 'ph ph-squares-four text-3xl'"></i><span class="text-[9px] font-black uppercase tracking-tighter">Vixel</span></button>
+          <button @click="switchMenu('personal')" :class="['flex flex-col items-center gap-1 transition', activeMenu === 'personal' ? 'text-purple-400' : 'text-gray-600']"><i :class="activeMenu === 'personal' ? 'ph-fill ph-user-circle text-3xl' : 'ph ph-user-circle text-3xl'"></i><span class="text-[9px] font-black uppercase tracking-tighter">Personal</span></button>
       </nav>
 
       <div class="hidden md:flex fixed bottom-10 right-10 gap-3 z-40">
            <a :href="activeMenu === 'vixel' ? 'https://vixelcreative.my.id' : 'https://portfoliowildan.my.id'" 
              target="_blank"
-             class="flex items-center gap-2 bg-[#111113] border border-white/10 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition shadow-2xl">
-             View Live Site <i class="ph ph-arrow-square-out"></i>
+             class="flex items-center gap-2 bg-[#111113] border border-white/10 text-white px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-white hover:text-black transition shadow-2xl">
+             View Site <i class="ph ph-arrow-square-out"></i>
           </a>
-          <button @click="seedData" class="bg-[#111113] border border-white/10 text-gray-400 px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:border-white transition">
+          <button @click="seedData" class="bg-[#111113] border border-white/10 text-gray-500 px-6 py-3.5 rounded-2xl font-bold text-xs uppercase tracking-widest hover:border-white hover:text-white transition">
             Seed
           </button>
       </div>
     </div>
 
-    <div v-if="showModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-[#111113] border border-white/10 w-full max-w-3xl rounded-2xl shadow-2xl my-8 flex flex-col max-h-[90vh]">
-            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-[#18181b] rounded-t-2xl">
-                <h2 class="text-xl font-bold">{{ isEditing ? 'Edit Project' : 'Add New Project' }}</h2>
-                <button @click="closeModal" class="text-gray-400 hover:text-white"><i class="ph ph-x text-xl"></i></button>
+    <div v-if="showModal" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto" @click.self="closeModal">
+        <div class="bg-[#111113] border border-white/10 w-full max-w-3xl rounded-[2rem] shadow-2xl my-8 flex flex-col max-h-[90vh] text-left">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-[#18181b]/50 rounded-t-[2rem]">
+                <h2 class="text-2xl font-black tracking-tight italic">{{ isEditing ? 'Edit Project.' : 'New Project.' }}</h2>
+                <button @click="closeModal" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition"><i class="ph ph-x text-xl"></i></button>
             </div>
             
-            <div class="p-6 overflow-y-auto flex-1">
-                <form class="space-y-6 text-sm">
-                    <div v-if="activeMenu === 'personal'" class="grid grid-cols-3 gap-3 mb-6">
+            <div class="p-8 overflow-y-auto flex-1">
+                <form class="space-y-8 text-sm">
+                    <div :class="['flex items-center justify-between p-5 rounded-2xl border transition', activeMenu === 'vixel' ? 'bg-cyan-400/5 border-cyan-400/20 text-cyan-400' : 'bg-purple-400/5 border-purple-400/20 text-purple-400']">
+                        <div class="flex items-center gap-3">
+                          <i class="ph-fill ph-push-pin text-xl"></i>
+                          <span class="font-bold uppercase tracking-widest text-xs">Pin to Selected Works</span>
+                        </div>
+                        <input type="checkbox" v-model="form.isPinned" :class="['w-6 h-6 rounded-lg', activeMenu === 'vixel' ? 'accent-cyan-400' : 'accent-purple-400']">
+                    </div>
+
+                    <div v-if="activeMenu === 'personal'" class="grid grid-cols-3 gap-4">
                         <label v-for="type in ['dev', 'photo', 'cinema']" :key="type" class="cursor-pointer">
                             <input type="radio" :value="type" v-model="form.project_type" class="hidden">
-                            <div :class="['text-center p-3 rounded-xl border text-xs font-bold uppercase transition', form.project_type === type ? 'bg-purple-400 text-black border-purple-400' : 'bg-[#09090b] text-gray-400 border-white/10 hover:border-purple-400/50']">
+                            <div :class="['text-center py-4 rounded-2xl border text-[10px] font-black uppercase tracking-widest transition-all', form.project_type === type ? 'bg-purple-400 text-black border-purple-400 shadow-lg shadow-purple-400/20' : 'bg-[#09090b] text-gray-500 border-white/10 hover:border-purple-400/50']">
                                 {{ type }}
                             </div>
                         </label>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Project Title *</label><input v-model="form.title" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none focus:border-white transition"></div>
-                        <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Category *</label><input v-model="form.category" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none focus:border-white transition"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Title</label>
+                            <input v-model="form.title" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none focus:border-white transition shadow-inner" placeholder="Project Name">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Category</label>
+                            <input v-model="form.category" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none focus:border-white transition" placeholder="e.g. Web Dev">
+                        </div>
                     </div>
 
                     <template v-if="activeMenu === 'vixel' || form.project_type === 'dev'">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Client</label><input v-model="form.client" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none"></div>
-                            <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Live Link</label><input v-model="form.link" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Client</label><input v-model="form.client" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></div>
+                            <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Live URL</label><input v-model="form.link" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></div>
                         </div>
-                        <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Short Description</label><textarea v-model="form.descShort" rows="2" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none"></textarea></div>
-                        <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Detailed Description</label><textarea v-model="form.descLong" rows="4" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none"></textarea></div>
-                        <div class="bg-[#09090b] border border-dashed border-white/20 p-6 rounded-xl">
-                            <label class="block text-xs text-gray-400 font-bold mb-3 uppercase">Upload Images</label>
-                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer">
+                        <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Short Desc</label><textarea v-model="form.descShort" rows="2" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></textarea></div>
+                        <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Long Desc</label><textarea v-model="form.descLong" rows="4" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none"></textarea></div>
+                        
+                        <div class="bg-[#09090b] border border-dashed border-white/20 p-8 rounded-2xl text-center group hover:border-white/40 transition">
+                            <i class="ph ph-cloud-arrow-up text-3xl text-gray-600 mb-2 block group-hover:text-white transition"></i>
+                            <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] cursor-pointer block mb-4">Click to Upload Images</label>
+                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-xs text-gray-500 file:hidden cursor-pointer mx-auto">
+                            <div v-if="selectedFiles.length > 0" class="mt-4 flex gap-2 flex-wrap justify-center"><span v-for="file in selectedFiles" :key="file.name" class="text-[9px] bg-white/10 text-white px-3 py-1 rounded-full">{{ file.name }}</span></div>
                         </div>
-                        <div><label class="block text-xs text-gray-400 font-bold mb-3 uppercase">Tech Stack</label>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                <label v-for="tech in availableStacks" :key="tech" class="flex items-center gap-2 bg-[#09090b] border border-white/10 p-2 rounded-lg cursor-pointer hover:border-white/50 transition">
-                                    <input type="checkbox" :value="tech" v-model="form.stack" class="accent-white"><span class="text-xs">{{ tech }}</span>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Tech Stack</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <label v-for="tech in availableStacks" :key="tech" class="flex items-center gap-3 bg-[#09090b] border border-white/10 p-3 rounded-xl cursor-pointer hover:border-white/30 transition">
+                                    <input type="checkbox" :value="tech" v-model="form.stack" :class="['w-4 h-4 rounded', activeMenu === 'vixel' ? 'accent-cyan-400' : 'accent-purple-400']">
+                                    <span class="text-xs font-medium">{{ tech }}</span>
                                 </label>
                             </div>
                         </div>
                     </template>
 
                     <template v-if="form.project_type === 'photo'">
-                        <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Caption</label><input v-model="form.descShort" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none" placeholder="Aesthetic quote..."></div>
-                        <div class="bg-[#09090b] border border-dashed border-white/20 p-6 rounded-xl"><label class="block text-xs text-gray-400 font-bold mb-3 uppercase">Upload Photos</label><input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-white/10 file:text-white hover:file:bg-white/20 cursor-pointer"></div>
+                        <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Aesthetic Quote</label><input v-model="form.descShort" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none" placeholder="..."></div>
+                        <div class="bg-[#09090b] border border-dashed border-white/20 p-10 rounded-2xl text-center">
+                            <i class="ph ph-images text-3xl text-gray-600 mb-3 block"></i>
+                            <input type="file" multiple accept="image/*" @change="handleFileSelect" class="block w-full text-xs text-gray-500 file:bg-white/5 file:border-0 file:text-white file:px-4 file:py-2 file:rounded-full cursor-pointer">
+                        </div>
                     </template>
 
                     <template v-if="form.project_type === 'cinema'">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Platform *</label><select v-model="form.media_type" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none focus:border-white transition text-white"><option value="youtube">YouTube</option><option value="drive">Google Drive</option><option value="link">Behance</option></select></div>
-                            <div><label class="block text-xs text-gray-400 font-bold mb-2 uppercase">Video ID *</label><input v-model="form.link" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-lg p-3 outline-none" placeholder="Ex: gDOdVnRsZ0E"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Platform</label><select v-model="form.media_type" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none text-white"><option value="youtube">YouTube</option><option value="drive">Google Drive</option><option value="link">Behance</option></select></div>
+                            <div class="space-y-2"><label class="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] ml-1">Video ID</label><input v-model="form.link" type="text" class="w-full bg-[#09090b] border border-white/10 rounded-xl p-4 outline-none" placeholder="Ex: gDOdVnRsZ0E"></div>
                         </div>
                     </template>
                 </form>
             </div>
 
-            <div class="p-6 border-t border-white/10 bg-[#18181b] rounded-b-2xl flex justify-end gap-3">
-                <button type="button" @click="closeModal" class="px-6 py-2.5 rounded-lg font-bold text-xs uppercase text-gray-400 hover:text-white transition">Cancel</button>
-                <button @click="saveProject" :disabled="isSaving" :class="['text-black px-6 py-2.5 rounded-lg font-bold text-xs uppercase hover:bg-white transition flex items-center gap-2', activeMenu === 'vixel' ? 'bg-cyan-400' : 'bg-purple-400']">
-                    {{ isSaving ? 'Saving...' : 'Save Data' }}
+            <div class="p-8 border-t border-white/5 bg-[#18181b]/50 rounded-b-[2rem] flex justify-end gap-4">
+                <button type="button" @click="closeModal" class="px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest text-gray-500 hover:text-white transition">Cancel</button>
+                <button @click="saveProject" :disabled="isSaving" :class="['px-10 py-3 rounded-xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-50 flex items-center gap-2 shadow-xl', activeMenu === 'vixel' ? 'bg-cyan-400 text-black shadow-cyan-400/20' : 'bg-purple-400 text-black shadow-purple-400/20']">
+                    <i v-if="isSaving" class="ph ph-spinner-gap animate-spin"></i>
+                    {{ isSaving ? 'Sending...' : 'Save Data' }}
                 </button>
             </div>
         </div>
@@ -201,12 +234,18 @@ const isEditing = ref(false);
 const editId = ref(null);
 const selectedFiles = ref([]);
 
+// TOAST STATE
+const toast = ref({ show: false, message: '', type: 'success' });
+const showToast = (msg, type = 'success') => {
+  toast.value = { show: true, message: msg, type };
+  setTimeout(() => { toast.value.show = false; }, 3000);
+};
+
 const availableStacks = ['React', 'Vue.js', 'Tailwind CSS', 'Vite', 'Flutter', 'Dart', 'AppSheet', 'Supabase', 'Firebase', 'Google Maps', 'Netlify', 'Vercel', 'Node.js', 'HTML5 Semantic', 'CSS3 Modern', 'Vanilla JS'];
 
 const form = ref({ project_type: 'dev', title: '', category: '', client: '', descShort: '', descLong: '', stack: [], images: [], link: '', github: '', media_type: 'youtube', isPinned: false });
 
 watch(activeMenu, () => { fetchProjects(); });
-
 const switchMenu = (menu) => { activeMenu.value = menu; };
 
 const fetchProjects = async () => {
@@ -215,13 +254,14 @@ const fetchProjects = async () => {
     const { data, error } = await supabase.from(activeTable.value).select('*').order('created_at', { ascending: false });
     if (error) throw error;
     projects.value = data;
-  } catch (e) { console.error(e); } finally { isLoading.value = false; }
+  } catch (e) { showToast("Gagal ambil data", "error"); } 
+  finally { isLoading.value = false; }
 };
 
 onMounted(() => { fetchProjects(); });
 
 const seedData = async () => {
-  if(!confirm(`Import data lama ke ${activeTable.value}?`)) return;
+  if(!confirm(`Import data asli ke ${activeTable.value}?`)) return;
   isLoading.value = true;
   let dataToSeed = [];
   
@@ -242,12 +282,15 @@ const seedData = async () => {
         { project_type: 'cinema', title: 'Profile Video', category: 'Profil Desa Wisata Ngabab', media_type: 'youtube', link: 'pBeJKxubs6M', isPinned: true },
         { project_type: 'cinema', title: 'After Movie', category: 'KKN UINSA 72 2025', media_type: 'link', link: 'wbE4NyEjDTc', isPinned: true },
         { project_type: 'dev', title: 'Storydesto', category: 'Marketplace Platform', client: 'Internal Startup', descShort: 'A digital marketplace connecting photography vendors with clients.', descLong: 'Features include a Smart Booking System, integrated multi-payment Gateway (Midtrans), and a robust Admin Dashboard.', stack: ['HTML5 Semantic', 'CSS3 Modern', 'Vanilla JS', 'Netlify'], images: ['/coverdesto.png'], isPinned: true },
-        { project_type: 'photo', title: 'Wedding Stories', category: 'WEDDING', descShort: 'Two souls, one promise.', images: ['/wed-cov.jpg'], isPinned: true }
+        { project_type: 'dev', title: "Puskewan Mobile", category: "Android App", client: 'Puskeswan Trenggalek', descShort: "Mobile application for veterinary services management.", descLong: "Features appointment scheduling, medical record tracking for livestock, and real-time reporting.", stack: ['Flutter', 'Dart', 'Supabase', 'PostgreSQL'], images: ['/puskeswan/1.png'], isPinned: true },
+        { project_type: 'photo', title: 'Behind the Scene', category: 'PROFILE', descShort: 'Fragments of moments behind the camera.', images: ['/me7.jpg', '/me6.jpg', '/me5.jpg'], isPinned: true },
+        { project_type: 'photo', title: 'Wedding Stories', category: 'WEDDING', descShort: 'Two souls, one promise. Capturing the sacred vows of eternal love.', images: ['/wed-cov.jpg', '/wed1.jpg', '/wed2.jpg'], isPinned: true },
+        { project_type: 'photo', title: 'Life Lately', category: 'JOURNAL', descShort: 'Fragments of time, gasoline, caffeine, and stories in between.', images: ['/livin1.jpg', '/livin3.jpg', '/livin10.jpg'], isPinned: true }
     ];
   }
 
   const { error } = await supabase.from(activeTable.value).insert(dataToSeed);
-  if(!error) fetchProjects();
+  if(!error) { fetchProjects(); showToast("Database seeded successfully!"); }
   isLoading.value = false;
 };
 
@@ -273,9 +316,28 @@ const saveProject = async () => {
         if (isEditing.value) await supabase.from(activeTable.value).update(payload).eq('id', editId.value);
         else await supabase.from(activeTable.value).insert([payload]);
         closeModal(); fetchProjects();
-    } catch (e) { alert("Gagal!"); } finally { isSaving.value = false; }
+        showToast("Project saved successfully!");
+    } catch (e) { showToast("Gagal menyimpan!", "error"); } finally { isSaving.value = false; }
 };
 
-const deleteProject = async (id) => { if(confirm("Hapus?")) { await supabase.from(activeTable.value).delete().eq('id', id); fetchProjects(); } };
+const deleteProject = async (id) => { 
+  if(confirm("Hapus project ini secara permanen?")) { 
+    await supabase.from(activeTable.value).delete().eq('id', id); 
+    fetchProjects(); 
+    showToast("Project deleted.");
+  } 
+};
+
 const handleLogout = async () => { await supabase.auth.signOut(); router.push('/'); };
 </script>
+
+<style scoped>
+.toast-enter-active, .toast-leave-active { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -20px); }
+
+/* Hide scrollbar but keep functionality */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+</style>
