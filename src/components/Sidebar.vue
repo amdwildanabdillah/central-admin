@@ -5,7 +5,7 @@ defineEmits(['switch', 'logout']);
 const menuItems = [
   { id: 'vixel', label: 'Vixel Works', icon: 'ph ph-squares-four', iconFill: 'ph-fill ph-squares-four', activeClass: 'bg-cyan-400/10 text-cyan-400 border-cyan-400/20' },
   { id: 'personal', label: 'Personal Porto', icon: 'ph ph-user-circle', iconFill: 'ph-fill ph-user-circle', activeClass: 'bg-purple-400/10 text-purple-400 border-purple-400/20' },
-  { id: 'storydesto', label: 'Storydesto HQ', icon: 'ph ph-camera', iconFill: 'ph-fill ph-camera', activeClass: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20' }
+  { id: 'storydesto', label: 'Storydesto', icon: 'ph ph-camera', iconFill: 'ph-fill ph-camera', activeClass: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20' }
 ];
 </script>
 
